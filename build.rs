@@ -36,11 +36,11 @@ impl Version {
     }
 
     fn max() -> Version {
-        #[cfg(not(windows))]
+        #[cfg(not(target_os = "windows"))]
         {
             Version::new(1, 9, 1)
         }
-        #[cfg(windows)]
+        #[cfg(target_os = "windows")]
         {
             Version::new(1, 0, 0)
         }
@@ -92,7 +92,7 @@ fn get_libpcap_version(libdirpath: Option<PathBuf>) -> Result<Version, Box<dyn s
     let mut libfile = PathBuf::from("libpcap.so");
     #[cfg(target_os = "macos")]
     let mut libfile = PathBuf::from("libpcap.dylib");
-    #[cfg(windows)]
+    #[cfg(target_os = "windows")]
     let mut libfile = PathBuf::from("wpcap.dll");
 
     if let Some(libdir) = libdirpath {
@@ -121,7 +121,7 @@ fn get_libpcap_version(libdirpath: Option<PathBuf>) -> Result<Version, Box<dyn s
 
     let err = format!("cannot infer pcap lib version from: {}", v_str);
 
-    #[cfg(not(windows))]
+    #[cfg(not(target_os = "windows"))]
     {
         let re =
             regex::Regex::new(r"libpcap version ([[:digit:]]+)\.([[:digit:]]+)\.([[:digit:]]+)")?;
@@ -138,7 +138,7 @@ fn get_libpcap_version(libdirpath: Option<PathBuf>) -> Result<Version, Box<dyn s
         ))
     }
 
-    #[cfg(windows)]
+    #[cfg(target_os = "windows")]
     {
         let re = regex::Regex::new(r"based on libpcap version ([[:digit:]]+)\.([[:digit:]]+)")?;
         let captures = re.captures(v_str).ok_or_else(|| err.clone())?;
